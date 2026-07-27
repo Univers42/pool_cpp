@@ -16,14 +16,13 @@
 
 int main(int argc, char** argv) {
   if (argc != 2) {
-    std::cerr << "Error: Invalid number of arguments." << std::endl;
-    std::cerr << "Usage: ./RPN \"<inverted polish expression>\"" << std::endl;
+    std::cerr << "Error" << std::endl;
     return 1;
   }
 
   try {
     RPN calculator;
-    calculator.evaluate(argv[1]);
+    std::cout << calculator.evaluate(argv[1]) << std::endl;
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return 1;

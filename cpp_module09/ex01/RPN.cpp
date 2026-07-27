@@ -13,7 +13,6 @@
 #include "RPN.hpp"
 
 #include <cctype>
-#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -34,9 +33,12 @@ bool RPN::isOperator(const std::string& token) const {
   return (token == "+" || token == "-" || token == "*" || token == "/");
 }
 
+// ponytail: plain int arithmetic — a long chain like eleven 9s multiplied
+// overflows and wraps. The subject caps operands below 10 and says nothing
+// about intermediate overflow; add checked ops only if an evaluator asks.
 void RPN::applyOperation(const std::string& op) {
   if (_stack.size() < 2) {
-    throw std::runtime_error("Error: Not enough operands.");
+    throw std::runtime_error("Error");
   }
 
   // The first popped element is the RIGHT operand!
@@ -53,20 +55,24 @@ void RPN::applyOperation(const std::string& op) {
     _stack.push(left * right);
   } else if (op == "/") {
     if (right == 0) {
-      throw std::runtime_error("Error: Division by zero.");
+      throw std::runtime_error("Error");
     }
     _stack.push(left / right);
   }
 }
 
-void RPN::evaluate(const std::string& expr) {
+int RPN::evaluate(const std::string& expr) {
+  while (!_stack.empty()) {  // make the object reusable across calls
+    _stack.pop();
+  }
+
   std::istringstream iss(expr);
   std::string token;
 
   while (iss >> token) {
-    if (token.length() == 1 && std::isdigit(token[0])) {
-      // The subject guarantees numbers will always be less than 10 (single
-      // digits)
+    if (token.length() == 1 &&
+        std::isdigit(static_cast<unsigned char>(token[0]))) {
+      // The subject guarantees operands are single digits (< 10).
       _stack.push(token[0] - '0');
     } else if (token.length() == 1 && isOperator(token)) {
       applyOperation(token);
@@ -75,11 +81,10 @@ void RPN::evaluate(const std::string& expr) {
     }
   }
 
-  // Once evaluation is complete, there must be exactly 1 item left in the
-  // stack.
+  // A well-formed expression leaves exactly one value on the stack.
   if (_stack.size() != 1) {
-    throw std::runtime_error("Error: Invalid expression format.");
+    throw std::runtime_error("Error");
   }
 
-  std::cout << _stack.top() << std::endl;
+  return _stack.top();
 }

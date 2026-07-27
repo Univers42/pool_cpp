@@ -1,64 +1,66 @@
-# 🧮 C++ Module 09 - Exercise 01: Reverse Polish Notation (RPN)
+# C++ Module 09 — ex01: Reverse Polish Notation (RPN)
 
-## 📖 Introduction
-Welcome to **RPN**! If you've ever looked at a mathematical equation and thought, *"Wow, parentheses and the order of operations (PEMDAS) are really annoying to code,"* you aren't alone. Early computer scientists felt the exact same way.
+## The concept
 
-Their solution? **Reverse Polish Notation (Postfix Notation).**
+Reverse Polish (postfix) notation puts the operator *after* its operands:
+infix `(8 * 9) - 9` becomes `8 9 * 9 -`. Because every operator applies to
+the two most recently produced values, no parentheses or precedence rules
+are needed — the token order alone encodes the evaluation order.
 
-This program takes a mathematical expression written in RPN, parses it strictly left-to-right, and evaluates it instantly using a single, highly efficient Data Structure: a **Stack**.
+The exercise teaches the canonical stack algorithm and, more subtly, that
+`std::stack` is a **container adaptor**: a restricted LIFO interface layered
+over a real sequence container that you can choose.
 
----
+### The algorithm (single left-to-right pass, O(n))
 
-## 🤔 What exactly is RPN?
-In standard math (Infix Notation), we put the operator *between* the numbers:
-`1 + 1`
+1. Token is a digit → push it.
+2. Token is `+ - * /` → pop the right operand, pop the left operand,
+   compute `left op right`, push the result.
+3. End of input → exactly one value must remain on the stack; that is the
+   result. Anything else (leftover operands, missing operands, junk tokens,
+   division by zero) is an error.
 
-In **Reverse Polish Notation**, we put the operator *after* the numbers:
-`1 1 +`
+Trace of `7 7 * 7 -`: push 7, push 7 → `*` pops 7,7 pushes 49 → push 7 →
+`-` pops 7,49 pushes 42. One value left: **42**.
 
-Because the operator always comes after its targets, **parentheses are completely unnecessary**. The order of the tokens mathematically guarantees the order of operations.
+## How this code demonstrates it
 
-For example, standard math `(8 * 9) - 9` becomes `8 9 * 9 -` in RPN.
+- `RPN` (Orthodox Canonical Form) owns one container:
 
----
+  ```cpp
+  std::stack<int, std::list<int> > _stack;
+  ```
 
-## 🧠 Our Strategy: The Stack Algorithm
-To solve this, we need a Data Structure that remembers numbers as we read them, but always gives us the most *recent* numbers when we hit an operator.
+  The second template argument replaces `std::stack`'s default backing
+  container (`std::deque`) with `std::list`. This is deliberate: module 09
+  forbids reusing a container across exercises, and ex02 (PmergeMe) needs
+  `std::vector` and `std::deque`. Adapting `std::list` keeps both free
+  while still satisfying "use at least one container" here.
 
-The perfect tool for this is a **Stack (LIFO - Last-In, First-Out)**.
+- `RPN::evaluate(const std::string&)` tokenizes with `std::istringstream`,
+  runs the algorithm above, and **returns** the result; printing is left to
+  `main`. Any invalid input throws `std::runtime_error("Error")`, which
+  `main` prints to **stderr** (exit status 1), matching the subject
+  verbatim. Operands are single digits by subject guarantee, so any token
+  that is not one digit or one operator (brackets, decimals, `10`, `-1`,
+  letters) is rejected.
 
-### The Golden Rules of our Algorithm:
-We read the string token by token from left to right in **O(N) time complexity**.
-1. **If the token is a number:** We `push` it onto the top of the stack.
-2. **If the token is an operator (`+`, `-`, `*`, `/`):** * We `pop` the top number off the stack (this is the **Right Operand**).
-   * We `pop` the *next* number off the stack (this is the **Left Operand**).
-   * We do the math: `Left [operator] Right`.
-   * We `push` the result back onto the top of the stack.
-3. **When the string ends:** There should be exactly **one** number left in the stack. That is our final answer!
+- Intermediate values and the result are ordinary `int`s and may exceed 9
+  or go negative — only the *input* operands are restricted.
 
-### 🕵️‍♂️ Step-by-Step Trace: `"7 7 * 7 -"`
-Let's see the stack in action:
-* Read `7` ➔ **PUSH**. *(Stack: `[7]`)*
-* Read `7` ➔ **PUSH**. *(Stack: `[7, 7]`)*
-* Read `*` ➔ **OPERATOR!**
-  * Pop `7` (Right)
-  * Pop `7` (Left)
-  * Calculate `7 * 7 = 49`
-  * **PUSH 49**. *(Stack: `[49]`)*
-* Read `7` ➔ **PUSH**. *(Stack: `[49, 7]`)*
-* Read `-` ➔ **OPERATOR!**
-  * Pop `7` (Right)
-  * Pop `49` (Left)
-  * Calculate `49 - 7 = 42`
-  * **PUSH 42**. *(Stack: `[42]`)*
+## Build / run / test
 
-End of string. The stack has exactly one item: **`42`**.
+```sh
+make                 # builds build/bin/RPN
+./build/bin/RPN "8 9 * 9 - 9 - 9 - 4 - 1 +"   # -> 42
+./build/bin/RPN "(1 + 1)"                      # -> Error (on stderr)
 
----
+make test            # builds and runs tests/test.cpp (exits non-zero on failure)
+make fclean          # removes build/
+```
 
-## 🚧 The "Forbidden Container" Trap
-Module 09 has a tricky rule: *"The container(s) you used in the previous exercise are forbidden here."* If you used `std::map` or `std::vector` in `ex00` (Bitcoin Exchange), you cannot use them here. Because `ex02` (PmergeMe) will heavily require `std::vector` and `std::deque`, we need to protect them!
-
-**Our Hack:** `std::stack` is actually a *Container Adaptor*. By default, it wraps a `std::deque`. To save `std::deque` for the next exercise, we explicitly forced our stack to wrap a `std::list` like this:
-```cpp
-std::stack<int, std::list<int> > _stack;
+`tests/test.cpp` checks the three subject examples, operand order
+(`3 4 -` is −1), integer truncation, results outside 0–9, all the error
+classes (brackets, empty input, missing/leftover operands, division by
+zero, multi-char and decimal tokens), and that one `RPN` object can be
+reused without stale stack state.
