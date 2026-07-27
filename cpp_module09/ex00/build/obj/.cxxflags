@@ -1,1 +1,0 @@
--std=c++98 -Wall -Wextra -Werror -DHAVE_MY_SQL_LITE=1  -lreadline
