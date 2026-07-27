@@ -13,7 +13,6 @@
 #ifndef CPP_MODULE01_EX05_HARL_HPP_
 #define CPP_MODULE01_EX05_HARL_HPP_
 
-#include <iostream>
 #include <string>
 
 class Harl {
