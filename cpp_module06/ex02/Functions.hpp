@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FUNCTIONS_HPP
-#define FUNCTIONS_HPP
+#ifndef CPP_MODULE06_EX02_FUNCTIONS_HPP_
+#define CPP_MODULE06_EX02_FUNCTIONS_HPP_
 
 #include "Base.hpp"
 
@@ -19,4 +19,4 @@ Base* generate(void);
 void identify(Base* p);
 void identify(Base& p);
 
-#endif
+#endif  // CPP_MODULE06_EX02_FUNCTIONS_HPP_

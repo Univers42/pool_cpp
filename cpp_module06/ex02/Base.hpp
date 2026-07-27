@@ -10,12 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BASE_HPP
-#define BASE_HPP
+#ifndef CPP_MODULE06_EX02_BASE_HPP_
+#define CPP_MODULE06_EX02_BASE_HPP_
 
+// ponytail: subject asks for a public virtual destructor ONLY; body lives in
+// Base.cpp because 42 rules forbid function implementations in headers.
 class Base {
-public:
-    virtual ~Base() {}
+ public:
+  virtual ~Base();
 };
 
-#endif
+#endif  // CPP_MODULE06_EX02_BASE_HPP_

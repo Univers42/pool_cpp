@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef B_HPP
-#define B_HPP
+#ifndef CPP_MODULE06_EX02_B_HPP_
+#define CPP_MODULE06_EX02_B_HPP_
 
 #include "Base.hpp"
 
 class B : public Base {};
 
-#endif
+#endif  // CPP_MODULE06_EX02_B_HPP_

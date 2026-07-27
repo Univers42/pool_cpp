@@ -1,32 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Base.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/25 22:00:39 by marvin            #+#    #+#             */
-/*   Updated: 2025/12/25 22:00:39 by marvin           ###   ########.fr       */
+/*   Created: 2025/12/25 22:01:48 by marvin            #+#    #+#             */
+/*   Updated: 2025/12/25 22:01:48 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
+#include "Base.hpp"
 
-#include "Functions.hpp"
-
-int main() {
-  std::srand(static_cast<unsigned int>(std::time(NULL)));
-
-  for (int i = 0; i < 5; ++i) {
-    Base* p = generate();
-    std::cout << "identify(pointer):   ";
-    identify(p);
-    std::cout << "identify(reference): ";
-    identify(*p);
-    delete p;
-    std::cout << std::endl;
-  }
-  return 0;
-}
+Base::~Base() {}
