@@ -10,65 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SCALARCONVERTER_HPP
-#define SCALARCONVERTER_HPP
+#ifndef CPP_MODULE06_EX00_SCALARCONVERTER_HPP_
+#define CPP_MODULE06_EX00_SCALARCONVERTER_HPP_
 
 #include <string>
-#include <iostream>
-#include <sstream>
-#include <limits>
-#include <cmath>
-#include <cctype>
-#include <cstdlib>
 
+// Subject: "ONLY one static method convert"; not instantiable by users.
 class ScalarConverter {
-private:
-    ScalarConverter();
-    ScalarConverter(const ScalarConverter& other);
-    ScalarConverter& operator=(const ScalarConverter& other);
-    ~ScalarConverter();
+ public:
+  static void convert(const std::string& literal);
 
-    enum LiteralType {
-        CHAR_LITERAL,
-        INT_LITERAL,
-        FLOAT_LITERAL,
-        DOUBLE_LITERAL,
-        PSEUDO_LITERAL,
-        INVALID
-    };
-
-    struct LiteralValue {
-        LiteralType type;
-        union {
-            char c;
-            int i;
-            float f;
-            double d;
-        } value;
-    };
-
-    // Type detection
-    static LiteralType detectType(const std::string& literal);
-    static bool matchesCharPattern(const std::string& s);
-    static bool matchesIntPattern(const std::string& s);
-    static bool matchesFloatPattern(const std::string& s);
-    static bool matchesDoublePattern(const std::string& s);
-    static bool matchesPseudoPattern(const std::string& s);
-
-    // Parsing
-    static LiteralValue parse(const std::string& literal);
-    
-    // Char output helpers
-    static void printCharFromValue(double val);
-    static void printIntFromValue(double val);
-    static void printFloatFromValue(double val);
-    static void printDoubleFromValue(double val);
-    
-    // Conversion strategies
-    static void outputAllTypes(double val);
-
-public:
-    static void convert(const std::string& literal);
+ private:
+  // ponytail: C++98 non-instantiable idiom — declared private, never defined.
+  ScalarConverter();
+  ScalarConverter(const ScalarConverter& other);
+  ScalarConverter& operator=(const ScalarConverter& other);
+  ~ScalarConverter();
 };
 
-#endif
+#endif  // CPP_MODULE06_EX00_SCALARCONVERTER_HPP_
