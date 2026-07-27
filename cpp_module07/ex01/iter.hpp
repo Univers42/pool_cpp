@@ -16,12 +16,16 @@
 #include <cstddef>  // required for size_t
 
 /**
- * @brief Iterates over an array and applies a function to each element
- * @tparam the type of the array elements (deduced automatically)
- * @param F the type of the callable function or function pointer.
- * @param array the address of the array to iterate over.
- * @param length the length fo the array (passed as const).
- * @param f the functio to execute on each element.
+ * @brief Applies f to every element of array.
+ *
+ * T deduces the element type including const-ness (a const array yields
+ * T = const X), and F deduces the callable's exact type, so f may take its
+ * argument by const or non-const reference, and may be an instantiated
+ * function template.
+ *
+ * @param array address of the array.
+ * @param length number of elements, passed as a const value.
+ * @param f function called on each element.
  */
 template <typename T, typename F>
 void iter(T* array, const size_t length, F f) {
