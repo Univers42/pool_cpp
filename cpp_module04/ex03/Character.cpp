@@ -22,23 +22,35 @@ Character::Character(std::string const& name) : _name(name) {
 }
 
 Character::Character(const Character& src) : _name(src._name) {
-  for (int i = 0; i < 4; i++) {
-    if (src._inventory[i])
-      this->_inventory[i] = src._inventory[i]->clone();  // DEEP COPY
-    else
-      this->_inventory[i] = NULL;
+  // a throwing clone() must not leak the clones made before it
+  int i = 0;
+  try {
+    for (; i < 4; i++)
+      this->_inventory[i] =
+          src._inventory[i] ? src._inventory[i]->clone() : NULL;  // DEEP COPY
+  } catch (...) {
+    while (i-- > 0) delete this->_inventory[i];
+    throw;
   }
 }
 
 Character& Character::operator=(const Character& rhs) {
   if (this != &rhs) {
     this->_name = rhs._name;
-    for (int i = 0; i < 4; i++) {
-      if (this->_inventory[i]) delete this->_inventory[i];  // DELETE OLD
-      if (rhs._inventory[i])
-        this->_inventory[i] = rhs._inventory[i]->clone();  // DEEP COPY NEW
-      else
-        this->_inventory[i] = NULL;
+    // clone ALL slots first: if one throws, our old inventory is untouched
+    // (deleting first would leave freed pointers behind on a throw)
+    AMateria* fresh[4];
+    int i = 0;
+    try {
+      for (; i < 4; i++)
+        fresh[i] = rhs._inventory[i] ? rhs._inventory[i]->clone() : NULL;
+    } catch (...) {
+      while (i-- > 0) delete fresh[i];
+      throw;
+    }
+    for (int j = 0; j < 4; j++) {
+      delete this->_inventory[j];  // DELETE OLD
+      this->_inventory[j] = fresh[j];  // INSTALL DEEP COPY
     }
   }
   return *this;
@@ -54,7 +66,11 @@ std::string const& Character::getName() const { return this->_name; }
 
 void Character::equip(AMateria* m) {
   if (!m) return;
-  for (int i = 0; i < 5; i++) {
+  // refuse double ownership: equipping the same pointer twice would make
+  // the destructor delete it twice
+  for (int i = 0; i < 4; i++)
+    if (this->_inventory[i] == m) return;
+  for (int i = 0; i < 4; i++) {
     if (this->_inventory[i] == NULL) {
       this->_inventory[i] = m;
       return;

@@ -19,22 +19,33 @@ MateriaSource::MateriaSource() {
 }
 
 MateriaSource::MateriaSource(const MateriaSource& src) {
-  for (int i = 0; i < 4; i++) {
-    if (src._templates[i])
-      this->_templates[i] = src._templates[i]->clone();
-    else
-      this->_templates[i] = NULL;
+  // a throwing clone() must not leak the clones made before it
+  int i = 0;
+  try {
+    for (; i < 4; i++)
+      this->_templates[i] =
+          src._templates[i] ? src._templates[i]->clone() : NULL;
+  } catch (...) {
+    while (i-- > 0) delete this->_templates[i];
+    throw;
   }
 }
 
 MateriaSource& MateriaSource::operator=(const MateriaSource& rhs) {
   if (this != &rhs) {
-    for (int i = 0; i < 4; i++) {
-      if (this->_templates[i]) delete this->_templates[i];
-      if (rhs._templates[i])
-        this->_templates[i] = rhs._templates[i]->clone();
-      else
-        this->_templates[i] = NULL;
+    // clone ALL first: a throwing clone must leave our templates untouched
+    AMateria* fresh[4];
+    int i = 0;
+    try {
+      for (; i < 4; i++)
+        fresh[i] = rhs._templates[i] ? rhs._templates[i]->clone() : NULL;
+    } catch (...) {
+      while (i-- > 0) delete fresh[i];
+      throw;
+    }
+    for (int j = 0; j < 4; j++) {
+      delete this->_templates[j];
+      this->_templates[j] = fresh[j];
     }
   }
   return *this;
@@ -46,15 +57,20 @@ MateriaSource::~MateriaSource() {
   }
 }
 
+// The subject says learnMateria "copies the Materia passed as a parameter":
+// store a clone, then free the original — callers hand it over
+// (src->learnMateria(new Ice())), so deleting it here is what keeps the
+// subject's own main leak-free.
 void MateriaSource::learnMateria(AMateria* m) {
   if (!m) return;
   for (int i = 0; i < 4; i++) {
     if (this->_templates[i] == NULL) {
-      this->_templates[i] = m;
+      this->_templates[i] = m->clone();
+      delete m;
       return;
     }
   }
-  delete m;  // If inventory is full, delete to avoid leak
+  delete m;  // Inventory full: nothing learned, but the hand-off is still ours
 }
 
 AMateria* MateriaSource::createMateria(std::string const& type) {

@@ -13,7 +13,6 @@
 #ifndef CPP_MODULE04_EX03_AMATERIA_HPP_
 #define CPP_MODULE04_EX03_AMATERIA_HPP_
 
-#include <iostream>
 #include <string>
 
 #include "ICharacter.hpp"
