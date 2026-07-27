@@ -1,39 +1,22 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Dog.cpp                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/28 23:48:29 by dlesieur          #+#    #+#             */
-/*   Updated: 2026/03/01 18:13:42 by dlesieur         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Dog.hpp"
-#include "Logger.hpp"
+
 #include <iostream>
 
 Dog::Dog() : Animal() {
-  this->type = "Dog";
-  LOG_CTOR();
+  type = "Dog";
+  std::cout << "Dog constructor called" << std::endl;
 }
 
 Dog::Dog(const Dog& src) : Animal(src) {
-  LOG_COPY();
-  *this = src;
+  std::cout << "Dog copy constructor called" << std::endl;
 }
 
 Dog& Dog::operator=(const Dog& rhs) {
-  LOG_ASSIGN();
-  if (this != &rhs) {
-    this->type = rhs.type;
-  }
+  std::cout << "Dog copy assignment called" << std::endl;
+  Animal::operator=(rhs);
   return *this;
 }
 
-Dog::~Dog() {
-  LOG_DTOR();
-}
+Dog::~Dog() { std::cout << "Dog destructor called" << std::endl; }
 
-void Dog::makeSound() const { std::cout << "Woof! Woof! Bark!" << std::endl; }
+void Dog::makeSound() const { std::cout << "Woof! Woof!" << std::endl; }

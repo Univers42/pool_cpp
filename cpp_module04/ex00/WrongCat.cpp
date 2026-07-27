@@ -1,39 +1,24 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   WrongCat.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/28 23:49:17 by dlesieur          #+#    #+#             */
-/*   Updated: 2026/03/01 17:23:53 by dlesieur         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "WrongCat.hpp"
-#include "Logger.hpp"
+
 #include <iostream>
 
 WrongCat::WrongCat() : WrongAnimal() {
-  this->type = "WrongCat";
-  LOG_CTOR();
+  type = "WrongCat";
+  std::cout << "WrongCat constructor called" << std::endl;
 }
 
 WrongCat::WrongCat(const WrongCat& src) : WrongAnimal(src) {
-  LOG_COPY();
-  *this = src;
+  std::cout << "WrongCat copy constructor called" << std::endl;
 }
 
 WrongCat& WrongCat::operator=(const WrongCat& rhs) {
-  LOG_ASSIGN();
-  if (this != &rhs) {
-    this->type = rhs.type;
-  }
+  std::cout << "WrongCat copy assignment called" << std::endl;
+  WrongAnimal::operator=(rhs);
   return *this;
 }
 
 WrongCat::~WrongCat() {
-  LOG_DTOR();
+  std::cout << "WrongCat destructor called" << std::endl;
 }
 
-void WrongCat::makeSound() const { std::cout << "Wrong Meow!" << std::endl; }
+void WrongCat::makeSound() const { std::cout << "Wrong meow?!" << std::endl; }

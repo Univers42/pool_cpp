@@ -1,42 +1,25 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Animal.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/28 23:47:51 by dlesieur          #+#    #+#             */
-/*   Updated: 2026/03/01 17:23:40 by dlesieur         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Animal.hpp"
-#include "Logger.hpp"
-#include <iostream>
-#include <string>
 
-Animal::Animal() : type("Generic Animal") {
-    LOG_CTOR();
+#include <iostream>
+
+Animal::Animal() : type("Animal") {
+  std::cout << "Animal constructor called" << std::endl;
 }
 
 Animal::Animal(const Animal& src) : type(src.type) {
-    LOG_COPY();
+  std::cout << "Animal copy constructor called" << std::endl;
 }
 
 Animal& Animal::operator=(const Animal& rhs) {
-    LOG_ASSIGN();
-    if (this != &rhs) {
-        this->type = rhs.type;
-    }
-    return *this;
+  std::cout << "Animal copy assignment called" << std::endl;
+  if (this != &rhs) type = rhs.type;
+  return *this;
 }
 
-Animal::~Animal() {
-    LOG_DTOR();
-}
+Animal::~Animal() { std::cout << "Animal destructor called" << std::endl; }
 
-std::string Animal::getType() const { return this->type; }
+std::string Animal::getType() const { return type; }
 
 void Animal::makeSound() const {
-    LOG_METHOD("makeSound() called - unidentifiable noise");
+  std::cout << "* generic animal noise *" << std::endl;
 }

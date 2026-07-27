@@ -1,66 +1,34 @@
-#include "Animal.hpp"
-#include "Dog.hpp"
-#include "Cat.hpp"
-#include "WrongAnimal.hpp"
-#include "WrongCat.hpp"
-#include "Logger.hpp"
-
 #include <iostream>
 
+#include "Animal.hpp"
+#include "Cat.hpp"
+#include "Dog.hpp"
+#include "WrongAnimal.hpp"
+#include "WrongCat.hpp"
+
 int main() {
-    // =========================================================
-    // PART 1: Correct behavior - virtual destructor chain
-    // =========================================================
-    PRINT_HEADER("PART 1: Virtual Destructor Chain");
+  // Subject example: virtual dispatch through Animal* picks the real type.
+  const Animal* meta = new Animal();
+  const Animal* j = new Dog();
+  const Animal* i = new Cat();
 
-    PRINT_LOG(InfoLog("Creating Dog and Cat via Animal* base pointers"));
-    Animal* a1 = new Dog();
-    Animal* a2 = new Cat();
+  std::cout << j->getType() << " " << std::endl;
+  std::cout << i->getType() << " " << std::endl;
+  i->makeSound();  // will output the cat sound!
+  j->makeSound();
+  meta->makeSound();
 
-    PRINT_SEP();
-    PRINT_H3("Runtime types");
-    PRINT_QUOTE(a1->getType());
-    PRINT_QUOTE(a2->getType());
+  delete meta;
+  delete j;  // virtual dtor: Dog then Animal destructor run
+  delete i;
 
-    PRINT_SEP();
-    PRINT_H3("Calling makeSound() via base pointer");
-    a1->makeSound();
-    a2->makeSound();
+  // Same code with the Wrong hierarchy: makeSound() is not virtual, so the
+  // WrongAnimal version is called even though the object is a WrongCat.
+  std::cout << "--- Wrong hierarchy ---" << std::endl;
+  const WrongAnimal* wrong = new WrongCat();
+  std::cout << wrong->getType() << " " << std::endl;
+  wrong->makeSound();  // outputs the WrongAnimal sound
+  delete wrong;
 
-    PRINT_SEP();
-    PRINT_LOG(WarnLog("Deleting via Animal* - derived destructors WILL be called"));
-    delete a1;
-    delete a2;
-    PRINT_LOG(SuccessLog("Dog::~Dog then Animal::~Animal => full cleanup"));
-    PRINT_LOG(SuccessLog("Cat::~Cat then Animal::~Animal => full cleanup"));
-
-    // =========================================================
-    // PART 2: Wrong behavior - non-virtual destructor chain
-    // =========================================================
-    PRINT_HEADER("PART 2: Non-Virtual Destructor (WRONG)");
-
-    PRINT_LOG(InfoLog("Creating WrongCat via WrongAnimal* base pointer"));
-    WrongAnimal* w1 = new WrongCat();
-
-    PRINT_SEP();
-    PRINT_H3("Runtime type");
-    PRINT_QUOTE(w1->getType());
-
-    PRINT_SEP();
-    PRINT_H3("Calling makeSound() via base pointer (method hiding)");
-    w1->makeSound();
-
-    PRINT_SEP();
-    PRINT_LOG(ErrorLog("Deleting via WrongAnimal* - WrongCat destructor SKIPPED!"));
-    delete w1;
-    PRINT_LOG(ErrorLog("Only WrongAnimal::~WrongAnimal called => INCOMPLETE cleanup"));
-
-    // =========================================================
-    // Conclusion
-    // =========================================================
-    PRINT_HEADER("CONCLUSION");
-    PRINT_SECTION("Virtual", "Dog/Cat destructors called correctly via Animal*");
-    PRINT_SECTION("Non-Virtual", "WrongCat destructor SKIPPED when deleted via WrongAnimal*");
-
-    return 0;
+  return 0;
 }
