@@ -14,7 +14,6 @@
 #define CPP_MODULE09_EX02_PMERGEME_HPP_
 
 #include <deque>
-#include <string>
 #include <utility>
 #include <vector>
 

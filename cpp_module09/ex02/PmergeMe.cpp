@@ -118,6 +118,9 @@ void PmergeMe::sortVector(std::vector<int>& arr) {
   for (size_t i = 0; i < main_chain.size(); ++i) {
     arr.push_back(main_chain[i]);
   }
+  // ponytail: lower_bound searches the whole chain instead of stopping at
+  // the partner's position; correct but a few extra comparisons. Bound the
+  // search range if an evaluator counts comparisons.
   std::vector<int> jacob = generateJacobsthalVector(pend.size());
   int last_inserted = 1;
 
