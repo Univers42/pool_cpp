@@ -3,69 +3,54 @@
 /*                                                        :::      ::::::::   */
 /*   Bureaucrat.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/25 19:37:22 by marvin            #+#    #+#             */
-/*   Updated: 2025/12/25 19:37:22 by marvin           ###   ########.fr       */
+/*   Created: 2025/12/25 19:37:22 by dlesieur          #+#    #+#             */
+/*   Updated: 2026/07/27 00:00:00 by dlesieur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BUREAUCRAT_HPP
-#define BUREAUCRAT_HPP
+#ifndef CPP_MODULE05_EX00_BUREAUCRAT_HPP_
+#define CPP_MODULE05_EX00_BUREAUCRAT_HPP_
 
-#include <string>
-#include <iostream>
 #include <exception>
+#include <iostream>
+#include <string>
 
-class AForm; // forward declare
+// Invariant: a Bureaucrat's grade is always in [1, 150], where 1 is the
+// highest grade. Every constructor and mutation enforces it by throwing.
+class Bureaucrat {
+ public:
+  // ponytail: exception classes skip OCF — the subject explicitly allows it.
+  class GradeTooHighException : public std::exception {
+   public:
+    virtual const char* what() const throw();
+  };
 
-/**
- * Invariant enforcement:
- * A Bureaucrat's grade must ALWAYS be between 1 and 150.
- * Any attempt to violate this invariant throws an exception.
- */
-class Bureaucrat
-{
-public:
-    // Exceptions
-    class GradeTooHighException : public std::exception {
-    public:
-        const char* what() const noexcept override;
-    };
+  class GradeTooLowException : public std::exception {
+   public:
+    virtual const char* what() const throw();
+  };
 
-    class GradeTooLowException : public std::exception {
-    public:
-        const char* what() const noexcept override;
-    };
+  Bureaucrat();
+  Bureaucrat(const std::string& name, int grade);
+  Bureaucrat(const Bureaucrat& other);
+  Bureaucrat& operator=(const Bureaucrat& other);
+  ~Bureaucrat();
 
-    // Orthodox Canonical Form
-    Bureaucrat();                                    // Default constructor
-    Bureaucrat(const Bureaucrat& other);             // Copy constructor
-    Bureaucrat& operator=(const Bureaucrat& other);  // Copy assignment
-    ~Bureaucrat();                                   // Destructor
+  std::string getName() const;
+  int getGrade() const;
 
-    // Parametrized constructor
-    Bureaucrat(const std::string& name, int grade);
+  void incrementGrade();  // toward 1
+  void decrementGrade();  // toward 150
 
-    // Accessors
-    std::string getName() const;
-    int getGrade() const;
+ private:
+  void validateGrade(int grade) const;
 
-    // Modifiers
-    void incrementGrade();
-    void decrementGrade();
-
-    // Actions
-    void signForm(AForm& form);
-    void executeForm(const AForm& form) const;
-
-private:
-    const std::string _name;
-    int _grade;
-
-    void validateGrade(int grade) const;
+  const std::string _name;
+  int _grade;
 };
 
 std::ostream& operator<<(std::ostream& os, const Bureaucrat& b);
 
-#endif // BUREAUCRAT_HPP
+#endif  // CPP_MODULE05_EX00_BUREAUCRAT_HPP_
