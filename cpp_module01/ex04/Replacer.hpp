@@ -22,9 +22,6 @@ class Replacer {
   std::string s1;
   std::string s2;
 
-  // Helper for the Knuth-Morris-Pratt Algorithm
-  void computeLPSArray(int* lps) const;
-
  public:
   Replacer(const std::string& filename, const std::string& s1,
            const std::string& s2);
