@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// ==================== Serializer.cpp ====================
 #include "Serializer.hpp"
+
+// ponytail: reinterpret_cast is the subject-mandated conversion here; the
+// round-trip Data* -> uintptr_t -> Data* is guaranteed by the standard.
 
 uintptr_t Serializer::serialize(Data* ptr) {
     return reinterpret_cast<uintptr_t>(ptr);

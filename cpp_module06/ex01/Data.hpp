@@ -10,18 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DATA_HPP
-#define DATA_HPP
+#ifndef CPP_MODULE06_EX01_DATA_HPP_
+#define CPP_MODULE06_EX01_DATA_HPP_
 
 #include <string>
 
+// ponytail: plain aggregate, no ctors -- keeps the header free of function
+// bodies (module rule); brace-init at call sites. Add a Data.cpp if ctors are
+// ever needed.
 struct Data {
-    int id;
-    double value;
-    std::string name;
-    
-    Data() : id(0), value(0.0), name("") {}
-    Data(int i, double v, std::string n) : id(i), value(v), name(n) {}
+  int id;
+  double value;
+  std::string name;
 };
 
-#endif
+#endif  // CPP_MODULE06_EX01_DATA_HPP_
