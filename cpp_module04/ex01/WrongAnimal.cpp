@@ -11,27 +11,26 @@
 /* ************************************************************************** */
 
 #include "WrongAnimal.hpp"
-#include "Logger.hpp"
 
 #include <iostream>
 #include <string>
 
 WrongAnimal::WrongAnimal() : type("Wrong Generic") {
-  LOG_CTOR();
+  std::cout << "WrongAnimal constructor called" << std::endl;
 }
 
 WrongAnimal::WrongAnimal(const WrongAnimal& src) : type(src.type) {
-  LOG_COPY();
+  std::cout << "WrongAnimal copy constructor called" << std::endl;
 }
 
 WrongAnimal& WrongAnimal::operator=(const WrongAnimal& rhs) {
-  LOG_ASSIGN();
+  std::cout << "WrongAnimal copy assignment operator called" << std::endl;
   if (this != &rhs) this->type = rhs.type;
   return *this;
 }
 
 WrongAnimal::~WrongAnimal() {
-  LOG_DTOR();
+  std::cout << "WrongAnimal destructor called" << std::endl;
 }
 
 std::string WrongAnimal::getType() const { return this->type; }

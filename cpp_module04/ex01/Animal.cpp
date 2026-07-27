@@ -11,40 +11,27 @@
 /* ************************************************************************** */
 
 #include "Animal.hpp"
-#include "Logger.hpp"
 
 #include <iostream>
 #include <string>
 
-/**
- * NOTICE: The virtual key doens't appear from the .cpp because it's a 
- * declaration specifier. it belogs only in the .hpp putting it into the
- * *.cpp will throw an error
- */
-// throw the assignment by default of animal throwed into the list memnber
-// initializer
 Animal::Animal() : type("Generic Animal") {
-  LOG_CTOR();
+  std::cout << "Animal constructor called" << std::endl;
 }
-
 
 Animal::Animal(const Animal& src) : type(src.type) {
-  LOG_COPY();
+  std::cout << "Animal copy constructor called" << std::endl;
 }
 
-// assignmen operator
 Animal& Animal::operator=(const Animal& rhs) {
-  LOG_ASSIGN();
-  // Self assignment Guard          
+  std::cout << "Animal copy assignment operator called" << std::endl;
   if (this != &rhs) {
     this->type = rhs.type;
   }
   return *this;
 }
 
-Animal::~Animal() {
-  LOG_DTOR();
-}
+Animal::~Animal() { std::cout << "Animal destructor called" << std::endl; }
 
 std::string Animal::getType() const { return this->type; }
 

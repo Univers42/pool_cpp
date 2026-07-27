@@ -13,16 +13,11 @@
 #ifndef CPP_MODULE04_EX01_BRAIN_HPP_
 #define CPP_MODULE04_EX01_BRAIN_HPP_
 
-#include <iostream>
 #include <string>
-
-#define RESET "\033[0m"
-#define DIM "\033[2m"
 
 /**
  * @class Brain
- * @brief This class exists t force us to learn the difference between 
- * SHALLOW COPY and a DEEP COPY
+ * @brief Exists to force the difference between SHALLOW and DEEP copy.
  */
 class Brain {
  public:

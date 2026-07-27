@@ -11,34 +11,35 @@
 /* ************************************************************************** */
 
 #include "Cat.hpp"
-#include "Logger.hpp"
 
 #include <iostream>
 
 Cat::Cat() : Animal() {
   this->type = "Cat";
   this->_brain = new Brain();
-  LOG_CTOR();
+  std::cout << "Cat constructor called" << std::endl;
 }
 
 Cat::Cat(const Cat& src) : Animal(src) {
   this->_brain = new Brain(*src._brain);
-  LOG_COPY();
+  std::cout << "Cat copy constructor called" << std::endl;
 }
 
 Cat& Cat::operator=(const Cat& rhs) {
-  LOG_ASSIGN();
+  std::cout << "Cat copy assignment operator called" << std::endl;
   if (this != &rhs) {
     Animal::operator=(rhs);
+    // clone first: if new throws, _brain must not be left dangling
+    Brain* fresh = new Brain(*rhs._brain);
     delete this->_brain;
-    this->_brain = new Brain(*rhs._brain);
+    this->_brain = fresh;
   }
   return *this;
 }
 
 Cat::~Cat() {
   delete this->_brain;
-  LOG_DTOR();
+  std::cout << "Cat destructor called" << std::endl;
 }
 
 void Cat::makeSound() const {

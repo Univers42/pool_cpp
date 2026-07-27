@@ -11,21 +11,20 @@
 /* ************************************************************************** */
 
 #include "WrongCat.hpp"
-#include "Logger.hpp"
 
 #include <iostream>
 
 WrongCat::WrongCat() : WrongAnimal() {
   this->type = "WrongCat";
-  LOG_CTOR();
+  std::cout << "WrongCat constructor called" << std::endl;
 }
 
 WrongCat::WrongCat(const WrongCat& src) : WrongAnimal(src) {
-  LOG_COPY();
+  std::cout << "WrongCat copy constructor called" << std::endl;
 }
 
 WrongCat& WrongCat::operator=(const WrongCat& rhs) {
-  LOG_ASSIGN();
+  std::cout << "WrongCat copy assignment operator called" << std::endl;
   if (this != &rhs) {
     WrongAnimal::operator=(rhs);
     this->type = rhs.type;
@@ -33,6 +32,8 @@ WrongCat& WrongCat::operator=(const WrongCat& rhs) {
   return *this;
 }
 
-WrongCat::~WrongCat() { LOG_DTOR(); }
+WrongCat::~WrongCat() {
+  std::cout << "WrongCat destructor called" << std::endl;
+}
 
 void WrongCat::makeSound() const { std::cout << "Wrong Meow!" << std::endl; }
