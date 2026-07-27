@@ -73,6 +73,7 @@ DIM = \033[2m
 GREEN = \033[92m
 CYAN = \033[96m
 YELLOW = \033[93m
+RED = \033[91m
 
 # ── Main targets ──────────────────────────────────────────────────────────────
 all: $(EXEC_BIN)
@@ -125,7 +126,8 @@ test: $(TEST_BINS)
 	else \
 		printf "\n  $(GREEN)●$(RESET) Built $(words $(TEST_BINS)) test(s)\n"; \
 		for test_bin in $(TEST_BINS); do \
-			echo "  $(CYAN)Executing $$test_bin...$(RESET)"; \
+			printf "  $(CYAN)running$(RESET)      $$test_bin\n"; \
+			./$$test_bin || exit 1; \
 		done; \
 	fi
 
