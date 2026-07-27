@@ -13,9 +13,6 @@
 #ifndef CPP_MODULE07_EX00_WHATEVER_HPP_
 #define CPP_MODULE07_EX00_WHATEVER_HPP_
 
-#include <algorithm>
-#include <utility>
-
 /**
  * @brief Swaps the values of two variables.
  * @tparam T The type of the variables.
