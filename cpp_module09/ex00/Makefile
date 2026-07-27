@@ -10,7 +10,7 @@ LIBS =
 LIBDIR_FLAG := $(if $(strip $(LIB_DIR)),-L$(LIB_DIR),)
 
 # Source files (auto-detected or provided)
-SRC_LIST = BitcoinExchange.cpp main.cpp vendor/ft_string.cpp
+SRC_LIST = BitcoinExchange.cpp main.cpp
 
 # Build directories
 BUILD_DIR = build
@@ -18,7 +18,8 @@ OBJ_DIR = $(BUILD_DIR)/obj
 BIN_DIR = $(BUILD_DIR)/bin
 
 # CRITICAL FIX: Isolate the Python target injection so rules compile to the right folder
-EXEC_BIN = $(BIN_DIR)/ex00
+# subject program name (manual override: gen_make.py regeneration would revert to ex00)
+EXEC_BIN = $(BIN_DIR)/btc
 
 # Object files from SRC_LIST
 OBJ := $(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(basename $(SRC_LIST))))
@@ -73,6 +74,7 @@ DIM = \033[2m
 GREEN = \033[92m
 CYAN = \033[96m
 YELLOW = \033[93m
+RED = \033[91m
 
 # ── Main targets ──────────────────────────────────────────────────────────────
 all: $(EXEC_BIN)
@@ -125,7 +127,8 @@ test: $(TEST_BINS)
 	else \
 		printf "\n  $(GREEN)●$(RESET) Built $(words $(TEST_BINS)) test(s)\n"; \
 		for test_bin in $(TEST_BINS); do \
-			echo "  $(CYAN)Executing $$test_bin...$(RESET)"; \
+			printf "  $(CYAN)running$(RESET)      $$test_bin\n"; \
+			./$$test_bin || exit 1; \
 		done; \
 	fi
 
