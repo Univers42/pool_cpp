@@ -1,24 +1,24 @@
-#ifndef ROBOTOMYREQUESTFORM_HPP
-# define ROBOTOMYREQUESTFORM_HPP
+#ifndef CPP_MODULE05_EX03_ROBOTOMYREQUESTFORM_HPP_
+#define CPP_MODULE05_EX03_ROBOTOMYREQUESTFORM_HPP_
 
-# include <string>
-# include "AForm.hpp"
+#include <string>
 
-class Bureaucrat;
+#include "AForm.hpp"
 
-class RobotomyRequestForm : public AForm
-{
-public:
-	RobotomyRequestForm(const std::string& target);
-	RobotomyRequestForm(const RobotomyRequestForm& other);
-	RobotomyRequestForm& operator=(const RobotomyRequestForm& other);
-	~RobotomyRequestForm();
+// Sign 72 / exec 45: robotomizes <target>, 50% success.
+class RobotomyRequestForm : public AForm {
+ public:
+  RobotomyRequestForm();
+  explicit RobotomyRequestForm(const std::string& target);
+  RobotomyRequestForm(const RobotomyRequestForm& other);
+  RobotomyRequestForm& operator=(const RobotomyRequestForm& other);
+  ~RobotomyRequestForm();
 
-protected:
-	void executeAction(const Bureaucrat& executor) const override;
+ protected:
+  void executeAction(const Bureaucrat& executor) const;
 
-private:
-	std::string _target;
+ private:
+  std::string _target;
 };
 
-#endif
+#endif  // CPP_MODULE05_EX03_ROBOTOMYREQUESTFORM_HPP_

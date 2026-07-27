@@ -1,49 +1,31 @@
-#include "AForm.hpp"
-#include "ShrubberyCreationForm.hpp"
-#include "RobotomyRequestForm.hpp"
-#include "PresidentialPardonForm.hpp"
-#include "Bureaucrat.hpp"
 #include <iostream>
 
-int main()
-{
-	// actors
-	Bureaucrat alice("Alice", 50);   // mid grade
-	Bureaucrat bob("Bob", 1);        // top grade
-	Bureaucrat tom("Tom", 150);      // low grade
+#include "AForm.hpp"
+#include "Bureaucrat.hpp"
+#include "Intern.hpp"
 
-	// forms
-	ShrubberyCreationForm shrub("home");
-	RobotomyRequestForm robo("Bender");
-	PresidentialPardonForm pardon("Ford");
+int main() {
+  Intern someRandomIntern;
+  Bureaucrat boss("Boss", 1);
 
-	std::cout << "=== Initial state ===\n";
-	std::cout << shrub << '\n' << robo << '\n' << pardon << '\n';
+  std::cout << "--- subject example ---" << std::endl;
+  AForm* rrf = someRandomIntern.makeForm("robotomy request", "Bender");
+  if (rrf) {
+    std::cout << *rrf << std::endl;
+    boss.signForm(*rrf);
+    boss.executeForm(*rrf);
+    delete rrf;
+  }
 
-	std::cout << "\n=== Signing attempts ===\n";
-	alice.signForm(shrub);   // should succeed (sign <=145)
-	alice.signForm(robo);    // should succeed (sign <=72)
-	alice.signForm(pardon);  // should fail (sign 25 required)
+  std::cout << "\n--- other known forms ---" << std::endl;
+  AForm* shrub = someRandomIntern.makeForm("shrubbery creation", "home");
+  AForm* pardon = someRandomIntern.makeForm("presidential pardon", "Arthur");
+  delete shrub;
+  delete pardon;
 
-	std::cout << "\n=== Execute attempts ===\n";
-	// Shrubbery: exec 137, alice(50) can execute
-	alice.executeForm(shrub);
+  std::cout << "\n--- unknown form ---" << std::endl;
+  AForm* coffee = someRandomIntern.makeForm("coffee making", "kitchen");
+  if (!coffee) std::cout << "makeForm returned NULL as expected" << std::endl;
 
-	// Robotomy: exec 45, alice(50) cannot; bob(1) can
-	alice.executeForm(robo); // expected failure due to grade
-	bob.executeForm(robo);   // success or random failure (50%)
-
-	// Presidential: exec 5, bob can execute after signing
-	bob.signForm(pardon);    // bob signs
-	bob.executeForm(pardon); // bob executes
-
-	std::cout << "\n=== Edge cases ===\n";
-	// try executing an unsigned form
-	ShrubberyCreationForm garden("garden");
-	bob.executeForm(garden); // should report cannot execute because not signed
-
-	// attempt sign with too low grade
-	tom.signForm(robo); // should fail
-
-	return 0;
+  return 0;
 }

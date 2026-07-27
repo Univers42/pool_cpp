@@ -1,37 +1,24 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ShrubberyCreationForm.hpp                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/25 21:27:12 by marvin            #+#    #+#             */
-/*   Updated: 2025/12/25 21:27:12 by marvin           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#ifndef CPP_MODULE05_EX03_SHRUBBERYCREATIONFORM_HPP_
+#define CPP_MODULE05_EX03_SHRUBBERYCREATIONFORM_HPP_
 
-#ifndef SHRUBBERYCREATIONFORM_HPP
-# define SHRUBBERYCREATIONFORM_HPP
+#include <string>
 
-# include <string>
-# include "AForm.hpp"
+#include "AForm.hpp"
 
-class Bureaucrat; // forward
+// Sign 145 / exec 137: writes ASCII trees to <target>_shrubbery.
+class ShrubberyCreationForm : public AForm {
+ public:
+  ShrubberyCreationForm();
+  explicit ShrubberyCreationForm(const std::string& target);
+  ShrubberyCreationForm(const ShrubberyCreationForm& other);
+  ShrubberyCreationForm& operator=(const ShrubberyCreationForm& other);
+  ~ShrubberyCreationForm();
 
-class ShrubberyCreationForm : public AForm
-{
-public:
-	// Canonical
-	ShrubberyCreationForm(const std::string& target);
-	ShrubberyCreationForm(const ShrubberyCreationForm& other);
-	ShrubberyCreationForm& operator=(const ShrubberyCreationForm& other);
-	~ShrubberyCreationForm();
+ protected:
+  void executeAction(const Bureaucrat& executor) const;
 
-protected:
-	// concrete action called by AForm::execute
-	void executeAction(const Bureaucrat& executor) const override;
-
-private:
-	std::string _target;
+ private:
+  std::string _target;
 };
-#endif
+
+#endif  // CPP_MODULE05_EX03_SHRUBBERYCREATIONFORM_HPP_
