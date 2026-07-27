@@ -13,9 +13,9 @@
 #include "Span.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
-#include <stdexcept>
-#include <vector>  // cpplint requires explicitly including what you use
+#include <vector>
 
 Span::Span() : _maxSize(0) {}
 
@@ -34,19 +34,20 @@ Span& Span::operator=(const Span& rhs) {
 Span::~Span() {}
 
 void Span::addNumber(int n) {
-  if (_vec.size() >= _maxSize) throw SpanFullException();  // Added ()
+  if (_vec.size() >= _maxSize) throw SpanFullException();
   _vec.push_back(n);
 }
 
+// ponytail: no int64_t in C++98 — unsigned subtraction wraps mod 2^32 and
+// yields the exact distance for any int pair (max span INT_MIN..INT_MAX fits
+// in unsigned int). Upgrade path: uint64_t if ints ever grow past 32 bits.
 unsigned int Span::longestSpan() const {
   if (_vec.size() < 2) throw NotEnoughElementsException();
 
   int minVal = *std::min_element(_vec.begin(), _vec.end());
   int maxVal = *std::max_element(_vec.begin(), _vec.end());
 
-  // to prevent signed overflow!
-  return static_cast<unsigned int>(static_cast<int64_t>(maxVal) -
-                                   static_cast<int64_t>(minVal));
+  return static_cast<unsigned int>(maxVal) - static_cast<unsigned int>(minVal);
 }
 
 unsigned int Span::shortestSpan() const {
@@ -56,15 +57,11 @@ unsigned int Span::shortestSpan() const {
   std::sort(sortedVec.begin(), sortedVec.end());
 
   unsigned int minSpan = std::numeric_limits<unsigned int>::max();
-
-  for (size_t i = 1; i < sortedVec.size(); ++i) {
-    // to prevent signed overflow!
-    unsigned int diff =
-        static_cast<unsigned int>(static_cast<int64_t>(sortedVec[i]) -
-                                  static_cast<int64_t>(sortedVec[i - 1]));
+  for (std::size_t i = 1; i < sortedVec.size(); ++i) {
+    unsigned int diff = static_cast<unsigned int>(sortedVec[i]) -
+                        static_cast<unsigned int>(sortedVec[i - 1]);
     if (diff < minSpan) minSpan = diff;
   }
-
   return minSpan;
 }
 

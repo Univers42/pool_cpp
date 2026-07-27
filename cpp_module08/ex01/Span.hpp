@@ -13,7 +13,6 @@
 #ifndef CPP_MODULE08_EX01_SPAN_HPP_
 #define CPP_MODULE08_EX01_SPAN_HPP_
 
-#include <algorithm>
 #include <exception>
 #include <iterator>
 #include <vector>
@@ -34,6 +33,10 @@ class Span {
   unsigned int shortestSpan() const;
   unsigned int longestSpan() const;
 
+  // Capacity is checked BEFORE inserting, so an oversized range throws and
+  // leaves the Span untouched (atomic). ponytail: distance + insert is two
+  // passes, so this needs forward iterators; single-pass input iterators
+  // would be consumed by the distance() walk.
   template <typename InputIterator>
   void addNumber(InputIterator first, InputIterator last) {
     if (std::distance(first, last) + _vec.size() > _maxSize) {
@@ -51,6 +54,6 @@ class Span {
    public:
     virtual const char* what() const throw();
   };
-};  // <-- Added the missing semicolon here
+};
 
 #endif  // CPP_MODULE08_EX01_SPAN_HPP_
