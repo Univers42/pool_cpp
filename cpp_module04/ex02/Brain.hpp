@@ -13,7 +13,6 @@
 #ifndef CPP_MODULE04_EX02_BRAIN_HPP_
 #define CPP_MODULE04_EX02_BRAIN_HPP_
 
-#include <iostream>
 #include <string>
 
 #define RESET "\033[0m"

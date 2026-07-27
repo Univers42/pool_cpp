@@ -13,8 +13,6 @@
 #ifndef CPP_MODULE04_EX02_WRONGCAT_HPP_
 #define CPP_MODULE04_EX02_WRONGCAT_HPP_
 
-#include <iostream>
-
 #include "WrongAnimal.hpp"
 
 class WrongCat : public WrongAnimal {

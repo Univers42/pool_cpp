@@ -30,8 +30,10 @@ Dog& Dog::operator=(const Dog& rhs) {
             << std::endl;
   if (this != &rhs) {
     AAnimal::operator=(rhs);
+    // clone first: if new throws, _brain must not be left dangling
+    Brain* fresh = new Brain(*rhs._brain);
     delete this->_brain;
-    this->_brain = new Brain(*rhs._brain);
+    this->_brain = fresh;
   }
   return *this;
 }

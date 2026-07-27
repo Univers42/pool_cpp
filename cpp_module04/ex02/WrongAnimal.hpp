@@ -13,7 +13,6 @@
 #ifndef CPP_MODULE04_EX02_WRONGANIMAL_HPP_
 #define CPP_MODULE04_EX02_WRONGANIMAL_HPP_
 
-#include <iostream>
 #include <string>
 
 class WrongAnimal {
