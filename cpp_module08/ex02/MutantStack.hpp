@@ -25,7 +25,7 @@ class MutantStack : public std::stack<T, Container> {
     if (this != &rhs) std::stack<T, Container>::operator=(rhs);
     return (*this);
   }
-  virtual ~MutantStack() {}
+  ~MutantStack() {}
 
   typedef typename Container::iterator iterator;
   typedef typename Container::const_iterator const_iterator;
@@ -44,6 +44,6 @@ class MutantStack : public std::stack<T, Container> {
 
   const_reverse_iterator rbegin() const { return this->c.rbegin(); }
   const_reverse_iterator rend() const { return this->c.rend(); }
-};  // <--- ADDED THE MISSING SEMICOLON!
+};
 
 #endif  // CPP_MODULE08_EX02_MUTANTSTACK_HPP_
