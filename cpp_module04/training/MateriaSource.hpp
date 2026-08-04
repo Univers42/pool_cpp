@@ -1,3 +1,8 @@
+#pragma once
+#include "AMateria.hpp"
+#include <iostream>
+
+
 class IMateriaSource {
 	public:
 		virtual ~IMateriaSource() {}
@@ -63,19 +68,17 @@ class MateriaSource : public IMateriaSource {
 				delete _templates[i];
 		}
 
-		virtual void learnMateria(AMateria* m) {
-			if (!m)
-				return;
+virtual void learnMateria(AMateria* m) {
+	if (!m)
+		return;
 
-			for (int i = 0; i < 4; i++) {
-				if (_templates[i] == NULL) {
-					_templates[i] = m;
-					return;
-				}
-			}
-
-			delete m;
+	for (int i = 0; i < 4; i++) {
+		if (_templates[i] == NULL) {
+			_templates[i] = m->clone();
+			return;
 		}
+	}
+}
 
 		virtual AMateria* createMateria(std::string const& type) {
 			for (int i = 0; i < 4; i++) {

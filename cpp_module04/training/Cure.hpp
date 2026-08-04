@@ -1,5 +1,6 @@
 #pragma once
 #include "AMateria.hpp"
+#include "ICharacter.hpp"
 
 class Cure : public AMateria{
 	public:
@@ -14,7 +15,7 @@ class Cure : public AMateria{
 		}
 		virtual ~Cure(){}
 		virtual AMateria* clone() const{ return new Cure(*this); }
-		virtual void use(Icharacter& target){
+		virtual void use(ICharacter& target){
 			std::cout << "* heals " << target.getName() << "'s wounds *" << std::endl;
 		}
 		
