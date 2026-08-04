@@ -6,7 +6,7 @@
 /*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/01 00:17:24 by dlesieur          #+#    #+#             */
-/*   Updated: 2026/03/01 17:26:52 by dlesieur         ###   ########.fr       */
+/*   Updated: 2026/08/04 13:01:30 by dlesieur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void MateriaSource::learnMateria(AMateria* m) {
   for (int i = 0; i < 4; i++) {
     if (this->_templates[i] == NULL) {
       this->_templates[i] = m->clone();
-      delete m;
       return;
     }
   }
