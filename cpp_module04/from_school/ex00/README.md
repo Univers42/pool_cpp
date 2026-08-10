@@ -1,0 +1,1 @@
+./build/bin/main 2>&1 | grep -E "(PASS|FAIL)" | grep -v "│"

@@ -4,7 +4,7 @@
 
 class Cure : public AMateria{
 	public:
-		Cure():AMateria("Cure"){}
+		Cure():AMateria("cure"){}
 		Cure(const Cure& other) : AMateria(other){}
 		/**
 			subject told us that it doesn't make sense to copy the _type so nothing should happen 

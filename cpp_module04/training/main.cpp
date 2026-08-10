@@ -13,9 +13,9 @@ int main()
 	src->learnMateria(new Cure());
 	ICharacter* me = new Character("me");
 	AMateria* tmp;
-	tmp = src->createMateria("Ice");		// sensible case
+	tmp = src->createMateria("ice");		// sensible case
 	me->equip(tmp);
-	tmp = src->createMateria("Cure");		// sensible case
+	tmp = src->createMateria("cure");		// sensible case
 	me->equip(tmp);
 	ICharacter* bob = new Character("bob");
 	me->use(0, *bob);

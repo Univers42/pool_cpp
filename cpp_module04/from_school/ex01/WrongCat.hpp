@@ -1,29 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Ice.cpp                                            :+:      :+:    :+:   */
+/*   WrongCat.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/01 00:16:26 by dlesieur          #+#    #+#             */
-/*   Updated: 2026/08/04 17:13:09 by dlesieur         ###   ########.fr       */
+/*   Created: 2026/02/28 23:49:12 by dlesieur          #+#    #+#             */
+/*   Updated: 2026/02/28 23:58:33 by dlesieur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Ice.hpp"
+#ifndef CPP_MODULE04_EX01_WRONGCAT_HPP_
+#define CPP_MODULE04_EX01_WRONGCAT_HPP_
+
 #include <iostream>
 
-Ice::Ice() : AMateria("ice") {}  // Type set to "ice"
-Ice::Ice(const Ice& src) : AMateria(src) {}
-Ice& Ice::operator=(const Ice& rhs) {
-  (void)rhs;
-  return *this;
-}
-Ice::~Ice() {}
+#include "WrongAnimal.hpp"
 
-AMateria* Ice::clone() const { return new Ice(*this); }
+class WrongCat : public WrongAnimal {
+ public:
+  WrongCat();
+  WrongCat(const WrongCat& src);
+  WrongCat& operator=(const WrongCat& rhs);
+  virtual ~WrongCat();
 
-void Ice::use(ICharacter& target) {
-  std::cout << "* shoots an ice bolt at " << target.getName() << " *"
-            << std::endl;
-}
+  void makeSound() const;
+};
+
+#endif  // CPP_MODULE04_EX01_WRONGCAT_HPP_

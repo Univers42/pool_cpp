@@ -4,7 +4,7 @@
 
 class Ice : public AMateria{
 	public:
-		Ice():AMateria("Ice"){}
+		Ice():AMateria("ice"){}
 		Ice(const Ice& other) : AMateria(other){}
 		/**
 			subject told us that it doesn't make sense to copy the _type so nothing should happen 
