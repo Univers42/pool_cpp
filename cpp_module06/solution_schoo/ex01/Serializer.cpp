@@ -30,6 +30,41 @@
 // ────────────────────────────────────────────────────────────────────────────
 
 #ifndef REINTERPRET
+/**
+take this low-levell bit/address representation and interpret it as anothe type
+
+int value = 42;
+
+unsigned char* bytes =
+    reinterpret_cast<unsigned char*>(&value);
+
+
+char c = 'A';
+
+unsigned char x =
+    reinterpret_cast<unsigned char&>(c);
+
+unsigned char x = static_cast<unsigned char>(c);
+
+
+Data data;
+Data* ptr = &data;
+
+ptr contains something like:
+0x7ffd12345678
+
+uintptr_t raw = Serializer::serialize(ptr);
+
+Data *ptr
+\|
+ v
+ 0x7ffd12345678
+ \|
+ v
+ uintptr_t integer
+
+ Data* ptr2 = Serializer::deserialize(raw)
+*/
 uintptr_t Serializer::serialize(Data* ptr) {
     return reinterpret_cast<uintptr_t>(ptr);
 }
