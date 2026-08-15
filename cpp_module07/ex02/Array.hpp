@@ -22,11 +22,12 @@ class Array {
   T* _array;
   unsigned int _size;
 
-  // Deep-copies n elements into a fresh buffer. Frees the buffer and
-  // rethrows if an element copy throws, so callers never leak it. Copying
-  // BEFORE touching *this is what gives copy ctor and operator= the strong
-  // exception guarantee (a throwing T can otherwise leak the new buffer in
-  // the ctor, or leave _array dangling in operator=).
+  // Build the whole new buffer first, and only then let the caller touch
+  // *this. Both bugs I had came from doing it the other way round: copying
+  // straight into _array leaked the buffer when an element copy threw (the
+  // object was still half-built, so no destructor ever ran for it), and
+  // freeing _array before allocating left it dangling when new T[n]() threw.
+  // The catch here is what stops the fresh buffer leaking on the way out.
   static T* cloneBuffer(const T* src, unsigned int n) {
     if (n == 0) return NULL;
     T* fresh = new T[n]();
@@ -47,6 +48,9 @@ class Array {
   Array(const Array& src)
       : _array(cloneBuffer(src._array, src._size)), _size(src._size) {}
 
+  // The self-assignment guard is only an optimisation here: cloneBuffer runs
+  // before the delete[], so a = a would read live memory and work anyway. It
+  // just saves a pointless allocate-and-copy.
   Array& operator=(const Array& rhs) {
     if (this != &rhs) {
       T* fresh = cloneBuffer(rhs._array, rhs._size);

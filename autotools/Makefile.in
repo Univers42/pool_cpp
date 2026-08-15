@@ -17,8 +17,13 @@ BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
 BIN_DIR = $(BUILD_DIR)/bin
 
+# The 42 norm requires the Makefile to provide the rules $(NAME), all, clean,
+# fclean and re. NAME is the canonical name; the binary itself is built inside
+# BIN_DIR, and $(NAME) is an alias target so `make $(NAME)` works as expected.
+NAME = @@TARGET@@
+
 # CRITICAL FIX: Isolate the Python target injection so rules compile to the right folder
-EXEC_BIN = $(BIN_DIR)/@@TARGET@@
+EXEC_BIN = $(BIN_DIR)/$(NAME)
 
 # Object files from SRC_LIST
 OBJ := $(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(basename $(SRC_LIST))))
@@ -76,7 +81,10 @@ YELLOW = \033[93m
 RED = \033[91m
 
 # ── Main targets ──────────────────────────────────────────────────────────────
-all: $(EXEC_BIN)
+all: $(NAME)
+
+# Required by the norm. The real work is the $(EXEC_BIN) rule below.
+$(NAME): $(EXEC_BIN)
 
 $(EXEC_BIN): $(OBJ) | $(BIN_DIR)
 	@printf "  $(DIM)linking$(RESET)      $(CYAN)$(notdir $@)$(RESET)\n"
@@ -129,6 +137,25 @@ test: $(TEST_BINS)
 			printf "  $(CYAN)running$(RESET)      $$test_bin\n"; \
 			./$$test_bin || exit 1; \
 		done; \
+	fi
+
+# Optional per-exercise check scripts, run in this order by 'make verify'.
+# A passing test suite proves nothing until you show it can fail, so:
+#   tests/mutants.sh       injects defects and requires the suite to catch them
+#   tests/compile_fail.sh  covers what must NOT compile, which no test can assert
+# Exercises without these scripts are unaffected: the wildcard is empty and
+# verify degrades to plain 'test'.
+CHECK_SCRIPTS := $(wildcard tests/mutants.sh tests/compile_fail.sh)
+
+verify: test
+	@if [ -z "$(CHECK_SCRIPTS)" ]; then \
+		printf "\n  $(YELLOW)⚠$(RESET) No check scripts in tests/ — 'make test' was the whole check.\n\n"; \
+	else \
+		for check in $(CHECK_SCRIPTS); do \
+			printf "\n  $(CYAN)running$(RESET)      $$check\n"; \
+			sh $$check || exit 1; \
+		done; \
+		printf "\n  $(GREEN)●$(RESET) $(BOLD)All checks passed$(RESET)\n\n"; \
 	fi
 
 # Google Test build helper (Only runs if 'make gtest' is explicitly called)
@@ -185,4 +212,4 @@ sqlite: fclean
 	@printf "  $(BOLD)$(CYAN)Building with MySQLite REPL support$(RESET)\n"
 	@$(MAKE) CXXFLAGS="$(CXXFLAGS) -DHAVE_MY_SQL_LITE=1" LDFLAGS="-lreadline" all
 
-.PHONY: all run clean fclean re test gtest norminette format sqlite
+.PHONY: all $(NAME) run clean fclean re test verify gtest norminette format sqlite

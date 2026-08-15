@@ -6,27 +6,24 @@
 /*   By: dlesieur <dlesieur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/01 11:37:11 by dlesieur          #+#    #+#             */
-/*   Updated: 2026/03/01 11:47:21 by dlesieur         ###   ########.fr       */
+/*   Updated: 2026/08/13 00:00:00 by dlesieur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CPP_MODULE07_EX01_ITER_HPP_
 #define CPP_MODULE07_EX01_ITER_HPP_
 
-#include <cstddef>  // required for size_t
+#include <cstddef>  // size_t
 
-/**
- * @brief Applies f to every element of array.
- *
- * T deduces the element type including const-ness (a const array yields
- * T = const X), and F deduces the callable's exact type, so f may take its
- * argument by const or non-const reference, and may be an instantiated
- * function template.
- *
- * @param array address of the array.
- * @param length number of elements, passed as a const value.
- * @param f function called on each element.
- */
+// Two template parameters, and both of them earn their place.
+//
+// T deduces the element type WITH its const, so a const array gives
+// T = const X and a callback taking X& refuses to bind. I never wrote a second
+// overload for const; the compiler does it.
+//
+// F deduces the callable's own type instead of pinning a signature like
+// void (*)(T&). That is why a functor works here, and an instantiated function
+// template, and a callback that returns something.
 template <typename T, typename F>
 void iter(T* array, const size_t length, F f) {
   for (size_t i = 0; i < length; ++i) f(array[i]);

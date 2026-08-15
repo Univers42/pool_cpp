@@ -32,10 +32,19 @@ nothing. The tests instead compare addresses: `&::min(x, y) == &y`. Returning
 references is what makes that observable at all, and it is the first time a
 test taught me to assert *identity* rather than value.
 
-The other small scar: every call site says `::swap`, `::min`, `::max`. Without
-the global-namespace qualifier, headers that drag in `std::swap` and friends
-make the call ambiguous. The trade-off I accepted is copy-based `swap` — heavy
-types pay a full copy cycle, but C++98 has no move semantics to offer anyway.
+The other small scar: every call site says `::swap`, `::min`, `::max`. I used
+to explain that as "otherwise it is ambiguous with `std::swap`", and writing
+`tests/compile_fail.sh` proved me wrong — the truth is worse. `swap(str1,
+str2)` **compiles**, and quietly calls `std::swap`: `<string>` declares a
+`swap` overload just for `basic_string`, which is *more specialised* than my
+generic `swap(T&, T&)`, so partial ordering prefers it. It swaps buffers in
+O(1) instead of making my three copies, and nothing tells you your template was
+never involved. The test now proves which one ran by watching the string's
+buffer address move. A real ambiguity needs a candidate exactly as generic as
+mine; that case lives in the compile-fail script. So the `::` is not decoration
+— without it you get the wrong function or no function. The trade-off I
+accepted is copy-based `swap` — heavy types pay a full copy cycle, but C++98
+has no move semantics to offer anyway.
 
 ## ex01 — iter
 
@@ -67,10 +76,18 @@ deduction, no overloads written.
 Where I got burned was the tests, not the template. My first suite checked
 sums of visited values, and a mutant that iterated `length + 1` times slipped
 through — it was only ever caught when adjacent stack garbage happened to
-change the sum. The fix in `tests/test.cpp` is a `countCall` callback and an
-exact `g_calls == 3` assertion: value-independent, deterministic, off-by-one
-in either direction fails. The trade-off of an unconstrained `F` is C++98
-error novels when the callable does not fit; I took the flexibility.
+change the sum. Counting invocations fixed that, and then a *backwards* mutant
+showed that a count is not enough either: reversing the loop preserves both the
+count and the sum. The suite now records the whole visit **sequence** and
+brackets the range with sentinel slots, so order, repeats and overruns in
+either direction all fail deterministically.
+
+The other thing `F` hides: it is a **by-value** parameter. A functor that
+accumulates state accumulates into `iter`'s copy, which dies on return — the
+caller's object is untouched. That is the same shape as `std::for_each`, which
+is why the standard one *returns* the functor. `iter` does not, so state has to
+live somewhere the copy still points at. The trade-off of an unconstrained `F`
+is C++98 error novels when the callable does not fit; I took the flexibility.
 
 ## ex02 — Array
 
@@ -109,16 +126,32 @@ every test I had*. The suite grew accordingly: `Array(0)` (which still calls
 read so the const `operator[]` overload is actually executed, not just
 compiled.
 
+Mutation testing also handed me a result I did not expect: **the
+`if (this != &rhs)` guard is not what makes self-assignment safe here.**
+Because `cloneBuffer` builds the new buffer before `delete[] _array` runs, the
+guard is redundant for correctness — deleting it is an *equivalent mutant*, and
+no value-based test could ever kill it. Getting the ordering right retired the
+guard's usual job. What it still buys is the pointless allocate-and-copy it
+skips, so that is what the suite asserts: self-assignment constructs zero new
+elements. `Bomb`, `Mine` and `Tracked` all count their live instances, which
+turns "a half-built Array orphaned its buffer" into an unbalanced ledger the
+tests can see without valgrind's help.
+
 ## What stuck with me
 
 Templates move whole categories of bugs to compile time, but they also hide
 whole categories from casual tests: I now assert identity where references
-are the contract, exact invocation counts where iteration is the contract,
+are the contract, exact invocation *sequences* where iteration is the contract,
 and I let valgrind vote on every exception path. Exception safety was
 invisible to me until I wrote types whose copies and constructors throw on
 purpose — correct-looking code held a leak and a double free for weeks. And a
-test suite is itself code that needs testing: the mutants I planted found
-more holes in my tests than in my templates.
+test suite is itself code that needs testing: the mutants I planted found more
+holes in my tests than in my templates, and the compile-fail scripts found a
+factual error in my own notes about `::` that had survived every review.
+
+The last thing I learned is that half a template's contract is the code it
+**refuses**, and no ordinary test can assert that — a test that fails to
+compile is not a test. That half needs its own harness.
 
 ## Building and testing
 
@@ -128,12 +161,37 @@ Each exercise is self-contained, built as C++98 with
 ```sh
 cd ex00        # or ex01, ex02
 make           # builds build/bin/exNN
-make run       # builds and runs the demo main
+make run       # builds and runs the guided tour in main.cpp
 make test      # builds and runs tests/test.cpp (exits non-zero on failure)
+make verify    # test + mutants.sh + compile_fail.sh, stops on first failure
 make fclean    # removes all build artifacts
 ```
 
-All three suites currently pass; the ex02 suite is also valgrind-clean
-(`--leak-check=full`), which is the whole point of the `Bomb` and `Mine`
-scenarios. Each exercise keeps its own `README.md` with the finer-grained
-design notes.
+`make verify` is the one-command check. It lives in `autotools/Makefile.in`, so
+it reaches any exercise on regeneration, and it degrades safely: an exercise
+with no `tests/*.sh` scripts just runs `test` and says so.
+
+Each `main.cpp` is a **guided tour**, not a bare demo: numbered sections, each
+one a thing the subject teaches or a thing that bit me, with the claims printed
+next to the values that back them. `make run` is the readable version of this
+README.
+
+Every exercise carries three layers of checking, because a passing suite proves
+nothing until you show it can fail:
+
+| | ex00 | ex01 | ex02 |
+|---|---|---|---|
+| `make test` assertions (+ fuzz, seeded) | 78 | 48 | 109 + 50 |
+| `./tests/mutants.sh` injected defects, all killed | 13 | 11 | 20 |
+| `./tests/compile_fail.sh` must-not-compile cases (+1 control each) | 8 | 9 | 10 |
+
+The test binaries take an optional seed (`./build/bin/test 1234`); the fuzz
+sections assert their own coverage, so a run that never generated the case that
+matters fails rather than passing quietly. `mutants.sh` mirrors the exercise
+into `build/mutants/` and drops a mutated header in place — the header-only
+equivalent of swapping an object file at link time.
+
+All three suites pass, build warning-free under both `clang++` and `g++`, and
+are valgrind-clean (`--leak-check=full`) on the success *and* error paths —
+which is the whole point of the `Bomb` and `Mine` scenarios. Each exercise
+keeps its own `README.md` with the finer-grained design notes.
