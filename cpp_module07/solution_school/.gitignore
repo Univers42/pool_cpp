@@ -1,0 +1,9 @@
+# Build artifacts: objects, binaries, and the mutation harness's scratch copies.
+build/
+*.o
+*.out
+
+# Editor / OS noise
+.vscode/
+.DS_Store
+*.swp
